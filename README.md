@@ -2,6 +2,7 @@
 
 [![Version Number](https://img.shields.io/github/v/release/ehennestad/optionspec-matlab?label=version)](https://github.com/ehennestad/optionspec-matlab/releases/latest)
 [![Run tests](https://github.com/ehennestad/optionspec-matlab/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ehennestad/optionspec-matlab/actions/workflows/run-tests.yml)
+[![codecov](https://codecov.io/gh/ehennestad/optionspec-matlab/graph/badge.svg?token=VKRD5KP7MZ)](https://codecov.io/gh/ehennestad/optionspec-matlab)
 [![MATLAB Code Issues](.github/badges/code_issues.svg)](https://github.com/ehennestad/optionspec-matlab/security/code-scanning)
 [![Run Codespell](https://github.com/ehennestad/optionspec-matlab/actions/workflows/run-codespell.yml/badge.svg)](https://github.com/ehennestad/optionspec-matlab/actions/workflows/run-codespell.yml)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://gitHub.com/ehennestad/optionspec-matlab/graphs/commit-activity)
