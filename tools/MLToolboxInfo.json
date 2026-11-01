@@ -1,0 +1,15 @@
+{
+    "Namespace" : "optionspec",
+    "RootFilesToPackage": ["LICENSE"],
+    "ToolboxOptions": {
+        "Identifier": "7c2757c0-5483-49db-a489-5c63281924b0",
+        "ToolboxName": "OptionSpec",
+        "AuthorName": "Eivind Hennestad",
+        "AuthorEmail": "ehennestad@gmail.com",
+        "AuthorCompany": "",
+        "Summary": "Versioned option definitions in JSON Schema, with JSON value documents and migrations",
+        "Description": "Defines options as versioned JSON Schema 2020-12 files, validates MATLAB structs against them, saves the values used for a result as JSON documents, and upgrades documents written under older definition versions with migration functions. Designed to be vendored into other toolboxes.",
+        "MinimumMatlabRelease": "R2021a",
+        "MaximumMatlabRelease": ""
+    }
+}
