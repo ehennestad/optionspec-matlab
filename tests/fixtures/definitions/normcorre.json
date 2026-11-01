@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fixtures.normcorre",
+  "x-version": "3.0.0",
+  "title": "NoRMCorre motion correction",
+  "description": "Modelled on nansen.wrapper.normcorre.Options.getDefaults: groups of options with sliders, dropdowns and fixed-length vectors.",
+  "type": "object",
+  "properties": {
+    "Configuration": {
+      "type": "object",
+      "properties": {
+        "numRows": {"type": "integer", "minimum": 1, "maximum": 16, "default": 4, "description": "Number of patch rows", "x-ui": {"widget": "slider", "step": 1}},
+        "numCols": {"type": "integer", "minimum": 1, "maximum": 16, "default": 4, "description": "Number of patch columns", "x-ui": {"widget": "slider", "step": 1}},
+        "patchOverlap": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 3, "maxItems": 3, "default": [32, 32, 16], "description": "Overlap between patches in pixels (y, x, z)"},
+        "gridUpsampling": {"type": "array", "items": {"type": "integer", "minimum": 1}, "minItems": 3, "maxItems": 3, "default": [4, 4, 1], "description": "Upsampling factor of the patch grid (y, x, z)"}
+      }
+    },
+    "Template": {
+      "type": "object",
+      "properties": {
+        "initialBatchSize": {"type": "integer", "minimum": 1, "default": 100, "description": "Number of frames used for the initial template"},
+        "updateTemplate": {"type": "boolean", "default": true, "description": "Update the template while correcting", "x-ui": {"widget": "checkbox"}},
+        "binWidth": {"type": "integer", "minimum": 1, "default": 50, "description": "Number of frames between template updates"}
+      }
+    },
+    "Correction": {
+      "type": "object",
+      "properties": {
+        "maximumShift": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 3, "maxItems": 3, "default": [40, 40, 5], "description": "Maximum rigid shift in pixels (y, x, z)"},
+        "maximumDeviation": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 3, "maxItems": 3, "default": [15, 15, 1], "description": "Maximum deviation of patch shifts from the rigid shift"},
+        "subpixelUpsampling": {"type": "integer", "minimum": 1, "default": 50},
+        "numIterations": {"type": "integer", "minimum": 1, "default": 1},
+        "shiftsMethod": {"type": "string", "enum": ["FFT", "cubic", "linear"], "default": "FFT", "x-ui": {"widget": "dropdown"}},
+        "boundary": {"type": "string", "enum": ["NaN", "copy", "zero", "template"], "default": "copy", "x-ui": {"widget": "dropdown"}},
+        "phaseFlag": {"type": "boolean", "default": false}
+      }
+    },
+    "Misc": {
+      "type": "object",
+      "properties": {
+        "Verbose": {"type": "boolean", "default": false},
+        "UseParallel": {"type": "boolean", "default": true}
+      }
+    }
+  }
+}

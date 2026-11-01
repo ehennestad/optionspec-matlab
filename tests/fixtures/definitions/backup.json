@@ -1,0 +1,11 @@
+{
+  "$id": "fixtures.backup",
+  "x-version": "1.0.0",
+  "title": "Back up session data",
+  "description": "Modelled on the session method nansen.module.general.core.sessionmethod.data.backup: ungrouped options, enum values with spaces and an empty folder path.",
+  "type": "object",
+  "properties": {
+    "BackupMode": {"type": "string", "enum": ["merge (no replace)", "merge (replace)", "mirror"], "default": "merge (no replace)", "x-ui": {"widget": "dropdown"}},
+    "BackupLocation": {"type": "string", "format": "folder-path", "default": "", "x-ui": {"widget": "folder", "label": "Backup location"}}
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$id": "fixtures.suite2p",
+  "x-version": "1.0.0",
+  "title": "suite2p ROI detection",
+  "description": "Modelled on nansen.twophoton.autosegmentation.suite2p.Options.getDefaults: an Inf default that the definition allows with x-nonfinite.",
+  "type": "object",
+  "properties": {
+    "CellDetection": {
+      "type": "object",
+      "properties": {
+        "cellDiameter": {"type": "integer", "minimum": 1, "default": 12, "x-ui": {"widget": "edit", "units": "pixels"}},
+        "smoothingSigma": {"type": "number", "minimum": 0, "default": 0.5},
+        "numSvdComponents": {"type": "integer", "minimum": 1, "default": 1000},
+        "numBinnedFramesForSvd": {"type": "integer", "minimum": 1, "default": 5000},
+        "thresholdScalingFactor": {"type": "number", "exclusiveMinimum": 0, "default": 1},
+        "signalExtractionType": {"type": "string", "enum": ["surround", "raw", "regression"], "default": "surround"},
+        "refineDetectedRois": {"type": "boolean", "default": true}
+      }
+    },
+    "Neuropil": {
+      "type": "object",
+      "properties": {
+        "neuropilPadding": {"type": "integer", "minimum": 0, "default": 1},
+        "radius": {"type": "number", "minimum": 0, "x-nonfinite": ["Inf"], "default": "Inf", "description": "Outer radius of the neuropil mask; Inf uses the whole field of view"},
+        "minNeuropilPixels": {"type": "integer", "minimum": 0, "default": 400},
+        "neuropilCellRatio": {"type": "number", "minimum": 0, "default": 5}
+      }
+    },
+    "Deconvolution": {
+      "type": "object",
+      "properties": {
+        "imagingRate": {"type": "number", "exclusiveMinimum": 0, "default": 30, "x-ui": {"widget": "edit", "units": "Hz"}},
+        "sensorTimeConstant": {"type": "number", "exclusiveMinimum": 0, "default": 2},
+        "maxNeuropil": {"type": "number", "minimum": 0, "default": 1}
+      }
+    }
+  }
+}

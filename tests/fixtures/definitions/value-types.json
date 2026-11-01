@@ -1,0 +1,43 @@
+{
+  "$id": "fixtures.value-types",
+  "x-version": "1.0.0",
+  "description": "One option for each value type and shape in the profile.",
+  "type": "object",
+  "properties": {
+    "flag": {"type": "boolean", "default": true},
+    "count": {"type": "integer", "default": 3},
+    "ratio": {"type": "number", "default": 0.25},
+    "label": {"type": "string", "default": "soma"},
+    "emptyLabel": {"type": "string", "default": ""},
+    "choice": {"type": "string", "enum": ["serial", "batch", "single"], "default": "batch"},
+    "level": {"type": "integer", "enum": [0, 1, 2], "default": 1},
+    "optionalCount": {"type": ["integer", "null"], "default": null},
+    "optionalLabel": {"type": ["string", "null"], "default": null},
+    "optionalVector": {"type": ["array", "null"], "items": {"type": "number"}, "default": null},
+    "optionalRange": {"type": ["array", "null"], "items": {"type": "integer"}, "default": [1, 2]},
+    "upperBound": {"type": "number", "x-nonfinite": ["Inf"], "default": "Inf"},
+    "lowerBound": {"type": "number", "x-nonfinite": ["-Inf", "Inf"], "default": "-Inf"},
+    "chunkLength": {"type": "number", "minimum": 1, "x-nonfinite": ["NaN"], "default": "NaN"},
+    "interval": {"type": "array", "items": {"type": "number", "minimum": 1, "x-nonfinite": ["Inf"]}, "minItems": 2, "maxItems": 2, "default": [1, "Inf"]},
+    "weights": {"type": "array", "items": {"type": "number"}, "default": [0.5, 0.5]},
+    "indices": {"type": "array", "items": {"type": "integer"}, "default": []},
+    "flags": {"type": "array", "items": {"type": "boolean"}, "default": [true, false]},
+    "names": {"type": "array", "items": {"type": "string"}, "default": ["a", "b"]},
+    "singleName": {"type": "array", "items": {"type": "string"}, "default": ["only"]},
+    "noNames": {"type": "array", "items": {"type": "string"}, "default": []},
+    "kernel": {"type": "array", "items": {"type": "array", "items": {"type": "number"}}, "default": [[1, 0], [0, 1]]},
+    "mask": {"type": "array", "items": {"type": "array", "items": {"type": "boolean"}}, "default": [[true, false, true]]},
+    "emptyMatrix": {"type": "array", "items": {"type": "array", "items": {"type": "number"}}, "default": []},
+    "Outer": {
+      "type": "object",
+      "properties": {
+        "Inner": {
+          "type": "object",
+          "properties": {
+            "depth": {"type": "integer", "default": 3}
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$id": "fixtures.extract",
+  "x-version": "1.0.0",
+  "title": "EXTRACT cell extraction",
+  "description": "Modelled on nansen.twophoton.autosegmentation.extract.Options.getDefaults: a numeric dropdown, null defaults for empty arrays, Inf for an integer and small tolerances.",
+  "type": "object",
+  "properties": {
+    "Main": {
+      "type": "object",
+      "properties": {
+        "avg_cell_radius": {"type": "integer", "minimum": 1, "default": 7},
+        "use_gpu": {"type": "boolean", "default": true},
+        "trace_output_option": {"type": "string", "enum": ["nonneg", "raw"], "default": "nonneg"},
+        "verbose": {"type": "integer", "enum": [0, 1, 2], "default": 2, "x-ui": {"widget": "dropdown"}}
+      }
+    },
+    "Computation": {
+      "type": "object",
+      "properties": {
+        "num_parallel_cpu_workers": {"type": "integer", "minimum": 1, "x-nonfinite": ["Inf"], "default": "Inf"}
+      }
+    },
+    "Fov": {
+      "type": "object",
+      "properties": {
+        "movie_mask": {"type": ["array", "null"], "items": {"type": "array", "items": {"type": "boolean"}}, "default": null, "description": "Logical mask of pixels to analyse; null analyses every pixel", "x-ui": {"widget": "hidden"}}
+      }
+    },
+    "CellFind": {
+      "type": "object",
+      "properties": {
+        "S_init": {"type": ["array", "null"], "items": {"type": "array", "items": {"type": "number"}}, "default": null, "x-ui": {"widget": "hidden"}},
+        "high2low_brightness_ratio": {"type": "number", "minimum": 1, "x-nonfinite": ["Inf"], "default": "Inf"},
+        "filter_type": {"type": "string", "enum": ["butter", "gauss", "wiener", "movavg", "none"], "default": "butter"}
+      }
+    },
+    "Optimization": {
+      "type": "object",
+      "properties": {
+        "TOL_sub": {"type": "number", "exclusiveMinimum": 0, "default": 1e-6},
+        "TOL_main": {"type": "number", "exclusiveMinimum": 0, "default": 0.01}
+      }
+    }
+  }
+}

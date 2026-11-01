@@ -1,0 +1,18 @@
+{
+  "$id": "fixtures.fov-manager",
+  "x-version": "1.0.0",
+  "title": "FOV manager settings",
+  "description": "Modelled on fovmanager.App.getDefaultSettings: an ungrouped option next to a nested struct.",
+  "type": "object",
+  "properties": {
+    "hemisphereToLabel": {"type": "string", "enum": ["left", "right", "both"], "default": "left"},
+    "fovOrientation": {
+      "type": "object",
+      "properties": {
+        "flipVertical": {"type": "boolean", "default": false},
+        "flipHorizontal": {"type": "boolean", "default": false},
+        "rotationAngle": {"type": "number", "minimum": -180, "maximum": 180, "default": -90}
+      }
+    }
+  }
+}
