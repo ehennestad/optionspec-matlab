@@ -1,0 +1,9 @@
+{
+  "optionspec": "1",
+  "definition": "fixtures.suite2p",
+  "version": "1.0.0",
+  "values": {
+    "Neuropil": {"radius": "Inf"},
+    "Deconvolution": {"imagingRate": 31, "sensorTimeConstantMs": 1500}
+  }
+}

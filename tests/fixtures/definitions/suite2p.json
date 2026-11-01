@@ -1,6 +1,6 @@
 {
   "$id": "fixtures.suite2p",
-  "x-version": "1.0.0",
+  "x-version": "2.0.0",
   "title": "suite2p ROI detection",
   "description": "Modelled on nansen.twophoton.autosegmentation.suite2p.Options.getDefaults: an Inf default that the definition allows with x-nonfinite.",
   "type": "object",

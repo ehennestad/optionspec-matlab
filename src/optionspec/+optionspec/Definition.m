@@ -28,6 +28,7 @@ classdef (Sealed) Definition
 %     Description - Description from "description"
 %     FilePath    - Path of the definition file
 %     Includes    - Included definitions, as "<id>@<version>"
+%     MigrationFile - Path of the migrations file, or ""
 %     Schema      - Canonical schema node of the options (see getOptionSchema)
 %
 %   Definition methods:
@@ -63,6 +64,11 @@ classdef (Sealed) Definition
         % Includes - Included definitions, as "<id>@<version>"
         Includes (1,:) string = strings(1, 0)
 
+        % MigrationFile - Path of the migrations file, or "" if there is none
+        %   The migrations file of "<name>.json" is "<name>.migrations.json"
+        %   in the same folder.
+        MigrationFile (1,1) string = ""
+
         % Schema - Canonical schema node of the options
         %   A struct with the fields Type, Nullable, Title, Description,
         %   HasDefault, Default, Enum, Minimum, Maximum, ExclusiveMinimum,
@@ -70,6 +76,11 @@ classdef (Sealed) Definition
         %   UI and NonFinite. Properties holds one node per option. UI holds
         %   the "x-ui" object as decoded by jsondecode.
         Schema struct = struct.empty
+    end
+
+    properties (Access = private)
+        % Migrations - Steps read from the migrations file
+        Migrations struct = struct("From", {}, "To", {}, "Description", {}, "Operations", {})
     end
 
     methods
@@ -85,6 +96,15 @@ classdef (Sealed) Definition
             obj.Title = header.Title;
             obj.Description = header.Description;
             obj.Includes = header.Includes;
+
+            [folder, name] = fileparts(obj.FilePath);
+            migrationFile = fullfile(folder, name + ".migrations.json");
+            if isfile(migrationFile)
+                obj.MigrationFile = migrationFile;
+                currentVersion = optionspec.internal.parseVersion(obj.Version);
+                obj.Migrations = optionspec.internal.loadMigrations( ...
+                    migrationFile, obj.Id, currentVersion(1));
+            end
         end
 
         function values = defaults(obj)
@@ -253,8 +273,14 @@ classdef (Sealed) Definition
         %
         %   values = definition.upgrade(values, fromVersion) returns values,
         %   a struct written under definition version fromVersion, as
-        %   values of this version: defaults are filled in for missing
+        %   values of this version. Values of an older major version are
+        %   passed through the migrations in MigrationFile, one major
+        %   version at a time. Then defaults are filled in for missing
         %   options and the result is validated.
+        %
+        %   Values of a newer major or minor version are an
+        %   OPTIONSPEC:NewerVersion error, and an older major version with
+        %   no migration an OPTIONSPEC:MissingMigration error.
 
             arguments
                 obj (1,1) optionspec.Definition
@@ -273,9 +299,8 @@ classdef (Sealed) Definition
                     fromVersion, obj.Id, obj.Version)
             end
             if fromNumbers(1) < currentNumbers(1)
-                error("OPTIONSPEC:MissingMigration", ...
-                    "Definition ""%s"" has no migration from version %s to %s.", ...
-                    obj.Id, fromVersion, obj.Version)
+                values = optionspec.internal.applyMigrations(values, obj.Migrations, ...
+                    fromNumbers(1), currentNumbers(1), obj.Id);
             end
             values = obj.resolve(values);
         end

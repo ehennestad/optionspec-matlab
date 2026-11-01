@@ -1,0 +1,27 @@
+{
+  "definition": "fixtures.normcorre",
+  "migrations": [
+    {
+      "from": 1,
+      "to": 2,
+      "description": "Spell out abbreviated names, fix the UseParallell typo and write shiftsMethod in upper case.",
+      "operations": [
+        {"op": "rename", "from": "Correction.maxShift", "to": "Correction.maximumShift"},
+        {"op": "rename", "from": "Correction.maxDeviation", "to": "Correction.maximumDeviation"},
+        {"op": "mapValues", "path": "Correction.shiftsMethod", "map": [{"from": "fft", "to": "FFT"}]},
+        {"op": "rename", "from": "Misc.UseParallell", "to": "Misc.UseParallel"}
+      ]
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "description": "Rename the Grid group to Configuration, replace the scalar upsampleFactor with a per-dimension gridUpsampling, drop useGpu and add phaseFlag, which version 2 always applied.",
+      "operations": [
+        {"op": "rename", "from": "Grid", "to": "Configuration"},
+        {"op": "function", "matlab": "optionspectest.upsampleFactorToGridUpsampling"},
+        {"op": "remove", "path": "Correction.useGpu"},
+        {"op": "add", "path": "Correction.phaseFlag", "value": true}
+      ]
+    }
+  ]
+}

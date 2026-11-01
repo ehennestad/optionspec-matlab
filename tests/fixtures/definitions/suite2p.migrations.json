@@ -1,0 +1,14 @@
+{
+  "definition": "fixtures.suite2p",
+  "migrations": [
+    {
+      "from": 1,
+      "to": 2,
+      "description": "Give the sensor time constant in seconds instead of milliseconds.",
+      "operations": [
+        {"op": "rename", "from": "Deconvolution.sensorTimeConstantMs", "to": "Deconvolution.sensorTimeConstant"},
+        {"op": "scale", "path": "Deconvolution.sensorTimeConstant", "factor": 0.001}
+      ]
+    }
+  ]
+}

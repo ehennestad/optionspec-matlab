@@ -1,0 +1,9 @@
+{
+  "optionspec": "1",
+  "definition": "fixtures.normcorre",
+  "version": "2.0.0",
+  "values": {
+    "Grid": {"numRows": 1, "numCols": 1, "patchOverlap": [32, 32, 16], "upsampleFactor": 4},
+    "Correction": {"maximumShift": [40, 40, 5], "shiftsMethod": "cubic", "useGpu": false}
+  }
+}

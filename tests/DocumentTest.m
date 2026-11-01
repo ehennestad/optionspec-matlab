@@ -167,7 +167,7 @@ classdef DocumentTest < matlab.unittest.TestCase
                 '{"optionspec": "1", "definition": "fixtures.normcorre", "version": "1.0.0", "values": {}}', "OPTIONSPEC:DefinitionMismatch", "written for definition ""fixtures.normcorre"""
                 '{"optionspec": "1", "definition": "fixtures.value-types", "version": "2.0.0", "values": {}}', "OPTIONSPEC:NewerVersion", "version 2.0.0"
                 '{"optionspec": "1", "definition": "fixtures.value-types", "version": "1.1.0", "values": {}}', "OPTIONSPEC:NewerVersion", "newer than version 1.0.0"
-                '{"optionspec": "1", "definition": "fixtures.value-types", "version": "0.9.0", "values": {}}', "OPTIONSPEC:MissingMigration", "no migration from version 0.9.0"
+                '{"optionspec": "1", "definition": "fixtures.value-types", "version": "0.9.0", "values": {}}', "OPTIONSPEC:MissingMigration", "no migration from major version 0 to 1"
                 '{"optionspec": "1", "definition": "fixtures.value-types", "version": "1.0.0", "values": {"count": "Inf"}}', "OPTIONSPEC:InvalidValues", "count: Inf is not allowed"
                 '{"optionspec": "1", "definition": "fixtures.value-types", "version": "1.0.0", "values": {"cuont": 1}}', "OPTIONSPEC:InvalidValues", "cuont: unknown option"
                 '{"optionspec": "1", "definition": "fixtures.value-types", "version": "1.0.0", "values": {"Outer": {"Inner": {"dep-th": 1}}}}', "OPTIONSPEC:InvalidKey", """dep-th"""

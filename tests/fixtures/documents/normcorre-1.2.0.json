@@ -1,0 +1,11 @@
+{
+  "optionspec": "1",
+  "definition": "fixtures.normcorre",
+  "version": "1.2.0",
+  "values": {
+    "Grid": {"numRows": 2, "numCols": 3, "patchOverlap": [16, 16, 8], "upsampleFactor": 2},
+    "Template": {"initialBatchSize": 200, "updateTemplate": false, "binWidth": 25},
+    "Correction": {"maxShift": [20, 20, 2], "maxDeviation": [10, 10, 1], "subpixelUpsampling": 20, "numIterations": 2, "shiftsMethod": "fft", "boundary": "zero", "useGpu": true},
+    "Misc": {"Verbose": true, "UseParallell": false}
+  }
+}
