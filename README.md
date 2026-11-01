@@ -76,6 +76,14 @@ definition.writeDocument("options.json", options.toStruct(), Overwrite=true)
 
 [src/optionspec/examples/optionspecExample.m](src/optionspec/examples/optionspecExample.m) is a longer example with an included definition and a migration.
 
+## Agent skill
+
+[skills/optionspec-definitions](skills/optionspec-definitions/SKILL.md) is an agent skill for writing, versioning and migrating definitions and generating their classes. It converts MATLAB `arguments` blocks and NANSEN option structs and lists the checks that prove a definition is correct. Install it with the GitHub CLI for Claude Code, Codex and other agents:
+
+```bash
+gh skill install ehennestad/optionspec-matlab optionspec-definitions --agent universal --scope user
+```
+
 ## Contributing
 Please see the [Contributing guidelines](.github/CONTRIBUTING.md) and the [Developer notes](.github/DeveloperNotes.md)
 
