@@ -1,0 +1,19 @@
+{
+  "$id": "fixtures.stack-processor",
+  "x-version": "1.0.0",
+  "title": "Image stack processor",
+  "description": "Modelled on the Run group of nansen.stack.ImageStackProcessor.getDefaultOptions, which every stack method inherits.",
+  "type": "object",
+  "properties": {
+    "Run": {
+      "type": "object",
+      "properties": {
+        "frameInterval": {"type": ["array", "null"], "items": {"type": "integer", "minimum": 1}, "minItems": 2, "maxItems": 2, "default": null, "description": "First and last frame to process; null processes all frames"},
+        "numFramesPerPart": {"type": "integer", "minimum": 1, "default": 1000},
+        "runOnSeparateWorker": {"type": "boolean", "default": false},
+        "PrimaryChannel": {"type": "integer", "minimum": 1, "default": 1},
+        "ChannelProcessingMode": {"type": "string", "enum": ["serial", "batch", "single"], "default": "serial", "x-ui": {"widget": "dropdown"}}
+      }
+    }
+  }
+}

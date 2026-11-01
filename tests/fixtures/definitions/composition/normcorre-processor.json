@@ -1,0 +1,24 @@
+{
+  "$id": "fixtures.normcorre-processor",
+  "x-version": "1.0.0",
+  "title": "NoRMCorre processor",
+  "description": "Modelled on nansen.wrapper.normcorre.Processor.getDefaultOptions: algorithm options, then the motion correction groups, then the stack processor Run group. It changes one inherited default and narrows one inherited enum.",
+  "type": "object",
+  "allOf": [{"$ref": "motion-correction.json"}],
+  "properties": {
+    "Configuration": {
+      "type": "object",
+      "properties": {
+        "numRows": {"type": "integer", "minimum": 1, "maximum": 16, "default": 4},
+        "numCols": {"type": "integer", "minimum": 1, "maximum": 16, "default": 4}
+      }
+    },
+    "Run": {
+      "type": "object",
+      "properties": {
+        "numFramesPerPart": {"default": 500},
+        "ChannelProcessingMode": {"enum": ["serial", "batch"], "description": "NoRMCorre corrects channels one at a time or together"}
+      }
+    }
+  }
+}

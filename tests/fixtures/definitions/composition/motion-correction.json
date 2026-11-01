@@ -1,0 +1,32 @@
+{
+  "$id": "fixtures.motion-correction",
+  "x-version": "1.0.0",
+  "title": "Motion correction",
+  "description": "Modelled on nansen.processing.MotionCorrection.getDefaultOptions, which adds groups to the stack processor options.",
+  "type": "object",
+  "allOf": [{"$ref": "stack-processor.json"}],
+  "properties": {
+    "Preprocessing": {
+      "type": "object",
+      "properties": {
+        "NumFlybackLines": {"type": "integer", "minimum": 0, "default": 0},
+        "BidirectionalCorrection": {"type": "string", "enum": ["None", "Constant", "Continuous"], "default": "None"}
+      }
+    },
+    "Preview": {
+      "type": "object",
+      "properties": {
+        "run": {"type": "boolean", "default": false, "x-ui": {"widget": "button", "label": "Run Preview"}}
+      }
+    },
+    "Export": {
+      "type": "object",
+      "properties": {
+        "FileName": {"type": "string", "default": ""},
+        "SaveDirectory": {"type": "string", "format": "folder-path", "default": "", "x-ui": {"widget": "folder"}},
+        "IntensityAdjustmentPercentile": {"type": "number", "enum": [0.05, 0.005, 0], "default": 0.005},
+        "OutputFormat": {"type": "string", "enum": ["Binary", "Tiff"], "default": "Tiff"}
+      }
+    }
+  }
+}

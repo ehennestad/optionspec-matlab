@@ -15,6 +15,11 @@ classdef (Sealed) Definition
 %     "properties"  The options, each an object with a "type" and a
 %                   "default". An option of type "object" is a group of
 %                   options and has "properties" instead of a default.
+%     "allOf"       Optional. Other definitions to include, as
+%                   [{"$ref": "<file>"}, ...] with paths relative to this
+%                   file. Their options follow the options of this file. An
+%                   included option can be redeclared to change its default
+%                   or to narrow its allowed values, but not its type.
 %
 %   Definition properties:
 %     Id          - Identifier from "$id"
@@ -22,6 +27,7 @@ classdef (Sealed) Definition
 %     Title       - Title from "title"
 %     Description - Description from "description"
 %     FilePath    - Path of the definition file
+%     Includes    - Included definitions, as "<id>@<version>"
 %     Schema      - Canonical schema node of the options (see getOptionSchema)
 %
 %   Definition methods:
@@ -49,6 +55,9 @@ classdef (Sealed) Definition
         % FilePath - Absolute path of the definition file
         FilePath (1,1) string = ""
 
+        % Includes - Included definitions, as "<id>@<version>"
+        Includes (1,:) string = strings(1, 0)
+
         % Schema - Canonical schema node of the options
         %   A struct with the fields Type, Nullable, Title, Description,
         %   HasDefault, Default, Enum, Minimum, Maximum, ExclusiveMinimum,
@@ -70,6 +79,7 @@ classdef (Sealed) Definition
             obj.Version = header.Version;
             obj.Title = header.Title;
             obj.Description = header.Description;
+            obj.Includes = header.Includes;
         end
 
         function values = defaults(obj)
