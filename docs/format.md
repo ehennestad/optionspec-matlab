@@ -85,7 +85,7 @@ A change to an included definition changes the values of every definition that i
 A definition has a semantic version `MAJOR.MINOR.PATCH`:
 
 - **Major**: values valid under the old version can be invalid under the new one. An option was removed, renamed, retyped or narrowed. Needs a migration.
-- **Minor**: options were added. Values of an older minor version are read with the defaults of the new options.
+- **Minor**: values valid under the old version stay valid. Options were added, an enum value was added, a range was widened, or a default changed. Values of an older minor version are read with the defaults of the new options. A changed default affects only documents that do not set the option, such as presets; to keep the old behaviour for them, a major version with an `add` migration is needed.
 - **Patch**: only titles, descriptions or hints changed.
 
 Reading values written under a newer major or minor version is an `OPTIONSPEC:NewerVersion` error. A newer patch version is read.
