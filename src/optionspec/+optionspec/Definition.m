@@ -26,6 +26,9 @@ classdef (Sealed) Definition
 %
 %   Definition methods:
 %     defaults        - Default values of all options
+%     validate        - Check values and return them in canonical form
+%     resolve         - Fill in defaults for missing options, then validate
+%     isValid         - True if values are valid
 %     getOptionSchema - Schema node of one option or group
 %
 %   See also optionspec.toolboxdir
@@ -77,6 +80,62 @@ classdef (Sealed) Definition
         %   nested struct.
 
             values = optionspec.internal.collectDefaults(obj.Schema);
+        end
+
+        function values = validate(obj, values)
+        %validate Check values against the definition and return them in canonical form.
+        %
+        %   values = definition.validate(values) checks that the struct
+        %   values sets every option of the definition, and no other, to a
+        %   valid value. It returns the values in canonical form, for
+        %   example row vectors and char text; see
+        %   optionspec.internal.normalizeValue for the forms. Every problem
+        %   is listed in one OPTIONSPEC:InvalidValues error.
+
+            arguments
+                obj (1,1) optionspec.Definition
+                values
+            end
+
+            [values, issues] = optionspec.internal.normalizeValue(values, obj.Schema, "");
+            if ~isempty(issues)
+                optionspec.internal.throwIssues("OPTIONSPEC:InvalidValues", ...
+                    sprintf("Values do not match definition ""%s"" %s:", obj.Id, obj.Version), issues)
+            end
+        end
+
+        function values = resolve(obj, values)
+        %resolve Fill in defaults for missing options, then validate.
+        %
+        %   values = definition.resolve(values) adds the default of every
+        %   option that the struct values does not set and validates the
+        %   result as definition.validate does. Use it for partial values,
+        %   such as a preset that changes a few options.
+        %
+        %   values = definition.resolve() returns the validated defaults.
+
+            arguments
+                obj (1,1) optionspec.Definition
+                values = struct()
+            end
+
+            values = optionspec.internal.fillDefaults(values, obj.Schema);
+            values = obj.validate(values);
+        end
+
+        function [tf, issues] = isValid(obj, values)
+        %isValid True if values set every option of the definition to a valid value.
+        %
+        %   [tf, issues] = definition.isValid(values) returns true or
+        %   false, and a string array with one entry per problem.
+
+            arguments
+                obj (1,1) optionspec.Definition
+                values
+            end
+
+            [~, issues] = optionspec.internal.normalizeValue(values, obj.Schema, "");
+            tf = isempty(issues);
         end
 
         function optionSchema = getOptionSchema(obj, optionPath)
