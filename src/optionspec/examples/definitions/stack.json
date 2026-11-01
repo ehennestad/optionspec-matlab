@@ -19,6 +19,5 @@
         "FitSampleSize": {"type": "integer", "minimum": 1, "default": 300}
       }
     }
-  },
-  "unevaluatedProperties": false
+  }
 }

@@ -30,6 +30,16 @@ function [rootNode, header] = loadDefinitionFile(filePath, includingFiles)
     rawDefinition = optionspec.internal.readJsonFile(filePath);
     [rawRoot, header, includeFiles, issues] = readTopLevel(rawDefinition, filePath);
 
+    % A JSON Schema validator evaluates an included definition on its own,
+    % so "false" there would reject the options of the including definition
+    isIncluded = ~isempty(includingFiles);
+    for keyword = ["unevaluatedProperties", "additionalProperties"]
+        if isIncluded && isstruct(rawDefinition) && isfield(rawDefinition, keyword)
+            issues(end+1) = sprintf("""%s"" is not allowed in a definition that another definition includes.", ...
+                keyword); %#ok<AGROW>
+        end
+    end
+
     rootNode = optionspec.internal.emptyNode();
     if isempty(issues)
         [rootNode, issues] = optionspec.internal.canonicalizeNode(rawRoot, "");

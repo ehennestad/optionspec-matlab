@@ -146,6 +146,8 @@ classdef CompositionTest < matlab.unittest.TestCase
                 '"allOf": [{"$ref": "loopA.json"}]');
             optionspectest.writeDefinition(testCase.TemporaryFolder, "broken.json", ...
                 '{"a": {"type": "number"}}');
+            optionspectest.writeDefinition(testCase.TemporaryFolder, "closed.json", ...
+                '{"verbose": {"type": "boolean", "default": true}}', '"unevaluatedProperties": false');
             optionspectest.writeDefinition(testCase.TemporaryFolder, "duplicate.json", ...
                 '{"verbose": {"type": "boolean", "default": true}}');
 
@@ -157,6 +159,7 @@ classdef CompositionTest < matlab.unittest.TestCase
                 '"allOf": [{"$ref": "self.json"}]', "is circular"
                 '"allOf": [{"$ref": "broken.json"}]', "broken.json"" is not valid"
                 '"allOf": [{"$ref": "base.json"}, {"$ref": "duplicate.json"}]', "verbose: declared by more than one"
+                '"allOf": [{"$ref": "closed.json"}]', """unevaluatedProperties"" is not allowed in a definition that another definition includes"
                 '"allOf": []', """allOf"" must be a non-empty array"
                 '"allOf": [{"$ref": "base.json", "title": "x"}]', """allOf"" must be a non-empty array"
                 '"allOf": [{"type": "object"}]', """allOf"" must be a non-empty array"
