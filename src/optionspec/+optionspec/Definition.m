@@ -35,6 +35,11 @@ classdef (Sealed) Definition
 %     validate        - Check values and return them in canonical form
 %     resolve         - Fill in defaults for missing options, then validate
 %     isValid         - True if values are valid
+%     encode          - Encode values as the JSON text of a value document
+%     decode          - Read values from the JSON text of a value document
+%     writeDocument   - Write values to a value document file
+%     readDocument    - Read values from a value document file
+%     upgrade         - Bring values of an older version up to this version
 %     getOptionSchema - Schema node of one option or group
 %
 %   See also optionspec.toolboxdir
@@ -131,6 +136,148 @@ classdef (Sealed) Definition
 
             values = optionspec.internal.fillDefaults(values, obj.Schema);
             values = obj.validate(values);
+        end
+
+        function jsonText = encode(obj, values)
+        %encode Encode values as the JSON text of a value document.
+        %
+        %   jsonText = definition.encode(values) validates the struct values
+        %   as definition.validate does and returns the text of a value
+        %   document:
+        %
+        %     {
+        %       "optionspec": "1",
+        %       "definition": "<id>",
+        %       "version": "<version>",
+        %       "values": {...}
+        %     }
+        %
+        %   Inf, -Inf and NaN are written as the text "Inf", "-Inf" and
+        %   "NaN", and empty values of nullable options as null.
+
+            arguments
+                obj (1,1) optionspec.Definition
+                values
+            end
+
+            values = obj.validate(values);
+            document = struct( ...
+                "optionspec", optionspec.internal.documentFormatVersion(), ...
+                "definition", char(obj.Id), ...
+                "version", char(obj.Version), ...
+                "values", optionspec.internal.encodeValue(values, obj.Schema));
+            jsonText = string(jsonencode(document, PrettyPrint=true)) + newline;
+        end
+
+        function [values, header] = decode(obj, jsonText)
+        %decode Read values from the JSON text of a value document.
+        %
+        %   [values, header] = definition.decode(jsonText) checks that the
+        %   document was written for this definition, fills in defaults
+        %   for options it does not set and validates the values. header is
+        %   a struct with the fields Definition and Version of the document.
+        %
+        %   A document written under an older minor version of the same
+        %   major version is read with defaults for the options added since.
+        %   A document written under a newer version is an
+        %   OPTIONSPEC:NewerVersion error.
+
+            arguments
+                obj (1,1) optionspec.Definition
+                jsonText {mustBeTextScalar}
+            end
+
+            document = optionspec.internal.decodeJson(jsonText, "Value document");
+            header = optionspec.internal.readDocumentHeader(document);
+            if header.Definition ~= obj.Id
+                error("OPTIONSPEC:DefinitionMismatch", ...
+                    "Value document was written for definition ""%s"", not ""%s"".", ...
+                    header.Definition, obj.Id)
+            end
+            values = obj.upgrade(document.values, header.Version);
+        end
+
+        function writeDocument(obj, filePath, values, options)
+        %writeDocument Write values to a value document file.
+        %
+        %   definition.writeDocument(filePath, values) validates values and
+        %   writes them as a value document (see encode) to filePath, in
+        %   UTF-8. An existing file is an OPTIONSPEC:FileExists error.
+        %
+        %   definition.writeDocument(..., Overwrite=true) replaces an
+        %   existing file.
+
+            arguments
+                obj (1,1) optionspec.Definition
+                filePath (1,1) string
+                values
+                options.Overwrite (1,1) logical = false
+            end
+
+            if isfile(filePath) && ~options.Overwrite
+                error("OPTIONSPEC:FileExists", ...
+                    "File ""%s"" exists. Use Overwrite=true to replace it.", filePath)
+            end
+            jsonText = obj.encode(values);
+
+            [fileId, message] = fopen(filePath, "w", "n", "UTF-8");
+            if fileId == -1
+                error("OPTIONSPEC:CannotWriteFile", "Cannot write file ""%s"": %s", filePath, message)
+            end
+            closeFile = onCleanup(@() fclose(fileId));
+            fwrite(fileId, jsonText, "char");
+        end
+
+        function [values, header] = readDocument(obj, filePath)
+        %readDocument Read values from a value document file.
+        %
+        %   [values, header] = definition.readDocument(filePath) reads the
+        %   file and decodes it as definition.decode does.
+
+            arguments
+                obj (1,1) optionspec.Definition
+                filePath (1,1) string
+            end
+
+            if ~isfile(filePath)
+                error("OPTIONSPEC:FileNotFound", "File ""%s"" does not exist.", filePath)
+            end
+            fileId = fopen(filePath, "r", "n", "UTF-8");
+            closeFile = onCleanup(@() fclose(fileId));
+            jsonText = fread(fileId, [1, Inf], "*char");
+            [values, header] = obj.decode(jsonText);
+        end
+
+        function values = upgrade(obj, values, fromVersion)
+        %upgrade Bring values written under an older version up to this version.
+        %
+        %   values = definition.upgrade(values, fromVersion) returns values,
+        %   a struct written under definition version fromVersion, as
+        %   values of this version: defaults are filled in for missing
+        %   options and the result is validated.
+
+            arguments
+                obj (1,1) optionspec.Definition
+                values
+                fromVersion (1,1) string
+            end
+
+            fromNumbers = optionspec.internal.parseVersion(fromVersion);
+            currentNumbers = optionspec.internal.parseVersion(obj.Version);
+            isNewer = fromNumbers(1) > currentNumbers(1) ...
+                || (fromNumbers(1) == currentNumbers(1) && fromNumbers(2) > currentNumbers(2));
+            if isNewer
+                error("OPTIONSPEC:NewerVersion", ...
+                    "Values were written under version %s of definition ""%s"", " + ...
+                    "which is newer than version %s. Update the definition to read them.", ...
+                    fromVersion, obj.Id, obj.Version)
+            end
+            if fromNumbers(1) < currentNumbers(1)
+                error("OPTIONSPEC:MissingMigration", ...
+                    "Definition ""%s"" has no migration from version %s to %s.", ...
+                    obj.Id, fromVersion, obj.Version)
+            end
+            values = obj.resolve(values);
         end
 
         function [tf, issues] = isValid(obj, values)
