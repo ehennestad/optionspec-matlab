@@ -29,6 +29,16 @@ classdef JsonReadingTest < matlab.unittest.TestCase
                 "OPTIONSPEC:InvalidJson")
         end
 
+        function testNonFiniteTokensAreAnError(testCase)
+            % jsondecode reads these tokens, but they are not JSON
+            for jsonText = ["[NaN]", "{""a"": Infinity}", "[1, -Infinity]"]
+                testCase.verifyError(@() optionspec.internal.decodeJson(jsonText), ...
+                    "OPTIONSPEC:InvalidJson", jsonText)
+            end
+            data = optionspec.internal.decodeJson('{"a": ["NaN", "Infinity", "-Inf"]}');
+            testCase.verifyEqual(data.a, {'NaN'; 'Infinity'; '-Inf'})
+        end
+
         function testMissingFileIsAnError(testCase)
             testCase.verifyError(@() optionspec.internal.readJsonFile("does-not-exist.json"), ...
                 "OPTIONSPEC:FileNotFound")
