@@ -30,5 +30,5 @@ classdef ExampleTest < matlab.unittest.TestCase
 end
 
 function runScript(scriptPath)
-    evalc("run(scriptPath)");
+    [~] = evalc("run(""" + scriptPath + """)");
 end
