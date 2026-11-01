@@ -16,6 +16,7 @@ optionspec defines the options of a processing step in a JSON Schema 2020-12 fil
 - `optionspec.Definition` reads a definition file and returns the defaults (`defaults`), checks values (`validate`, `isValid`), fills in defaults for partial values such as presets (`resolve`), and writes and reads value documents (`writeDocument`, `readDocument`).
 - A definition includes other definitions with `allOf`, for example options shared by every step. An included option can be given another default or a narrower range, but not another type.
 - A `<name>.migrations.json` file next to a definition lists operations (`rename`, `remove`, `add`, `mapValues`, `scale`, and `function` for a MATLAB function) that upgrade values by one major version each. `readDocument` applies them to documents of older versions.
+- `optionspec.generateClasses` writes MATLAB value classes from a definition: options are properties with defaults, help text and property validation, so they are checked when set and complete with Tab. `optionspec.checkGeneratedClasses` reports classes that no longer match their definition, for a test in the toolbox that commits them.
 - Inf, -Inf and NaN are written as the strings `"Inf"`, `"-Inf"` and `"NaN"`, and allowed only for options that list them in `x-nonfinite`.
 
 [docs/format.md](docs/format.md) specifies the three file formats and how values map to MATLAB types.
@@ -61,6 +62,16 @@ values = definition.defaults();          % values.Registration.MaxShift is Inf
 values = definition.resolve(struct("Registration", struct("MaxShift", 15)));
 definition.writeDocument("options.json", values)
 [values, header] = definition.readDocument("options.json");
+```
+
+Generate classes and use them:
+
+```matlab
+% src is the source folder of a toolbox, on the MATLAB path
+optionspec.generateClasses("registration.json", "src", Namespace="mytoolbox.options");
+options = mytoolbox.options.RegistrationOptions();
+options.Registration.UpsampleFactor = 20;    % validated when set
+definition.writeDocument("options.json", options.toStruct(), Overwrite=true)
 ```
 
 [src/optionspec/examples/optionspecExample.m](src/optionspec/examples/optionspecExample.m) is a longer example with an included definition and a migration.
