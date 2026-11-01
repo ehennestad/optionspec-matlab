@@ -6,7 +6,7 @@ function gettingStarted()
     %   Example:
     %       optionspec.gettingStarted()
     %
-    %   See also optionspec.toolboxdir, optionspec.toolboxversion
+    %   See also optionspec.Definition, optionspec.toolboxdir, optionspec.toolboxversion
 
     % Display welcome message
     fprintf('Welcome to %s!\n\n', 'OptionSpec');
@@ -20,6 +20,7 @@ function gettingStarted()
     
     % Display available functions
     fprintf('Available functions:\n');
+    fprintf('  - optionspec.Definition\n');
     fprintf('  - optionspec.toolboxdir\n');
     fprintf('  - optionspec.toolboxversion\n');
     fprintf('  - optionspec.gettingStarted\n\n');
