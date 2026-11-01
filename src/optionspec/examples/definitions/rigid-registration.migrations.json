@@ -1,0 +1,14 @@
+{
+  "definition": "example.rigid-registration",
+  "migrations": [
+    {
+      "from": 1,
+      "to": 2,
+      "description": "Version 1 of this example named the upsampling option SubpixelFactor and had no Taper option; it never tapered.",
+      "operations": [
+        {"op": "rename", "from": "Registration.SubpixelFactor", "to": "Registration.UpsampleFactor"},
+        {"op": "add", "path": "Registration.Taper", "value": false}
+      ]
+    }
+  ]
+}

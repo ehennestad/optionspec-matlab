@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "example.rigid-registration",
+  "x-version": "2.0.0",
+  "title": "Rigid registration",
+  "description": "Options of a registration step, modelled on the name-value arguments of imagestack.processing.estimateRigidShifts, combined with the stack options.",
+  "type": "object",
+  "allOf": [{"$ref": "stack.json"}],
+  "properties": {
+    "Registration": {
+      "type": "object",
+      "properties": {
+        "MaxShift": {"type": "number", "minimum": 0, "x-nonfinite": ["Inf"], "default": "Inf", "description": "Largest shift searched, in pixels", "x-ui": {"widget": "edit", "units": "pixels"}},
+        "UpsampleFactor": {"type": "integer", "minimum": 1, "default": 10, "description": "Subpixel precision is 1/UpsampleFactor pixel"},
+        "Taper": {"type": "boolean", "default": true, "description": "Multiply images by a Tukey window before the FFT", "x-ui": {"widget": "checkbox"}}
+      }
+    },
+    "Stack": {
+      "type": "object",
+      "properties": {
+        "ChannelProcessingMode": {"enum": ["batch", "serial"]}
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

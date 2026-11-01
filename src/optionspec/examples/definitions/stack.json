@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "example.stack",
+  "x-version": "1.0.0",
+  "title": "Stack processing",
+  "description": "Options shared by every processing step. Modelled on the stack-level options of imagestack.ImageStackProcessor and imagestack.Pipeline/run.",
+  "type": "object",
+  "properties": {
+    "Stack": {
+      "type": "object",
+      "properties": {
+        "ChunkLength": {"type": "number", "minimum": 1, "x-nonfinite": ["NaN"], "default": "NaN", "description": "Number of timepoints per chunk"},
+        "TimepointInterval": {"type": "array", "items": {"type": "number", "minimum": 1, "x-nonfinite": ["Inf"]}, "minItems": 2, "maxItems": 2, "default": [1, "Inf"], "description": "First and last timepoint to process"},
+        "ChannelProcessingMode": {"type": "string", "enum": ["batch", "serial", "single"], "default": "batch", "x-ui": {"widget": "dropdown"}},
+        "PlaneProcessingMode": {"type": "string", "enum": ["batch", "serial"], "default": "batch", "x-ui": {"widget": "dropdown"}},
+        "PartsToProcess": {"type": ["array", "null"], "items": {"type": "integer", "minimum": 1}, "default": null, "description": "Indices of the parts to process; null processes all parts"},
+        "OutputFormat": {"type": "string", "enum": ["raw", "tif"], "default": "raw"},
+        "OutputDataType": {"type": "string", "default": "same", "description": "Data type of the output; \"same\" keeps the input type"},
+        "FitSampleSize": {"type": "integer", "minimum": 1, "default": 300}
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

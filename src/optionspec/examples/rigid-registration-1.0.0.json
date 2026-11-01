@@ -1,0 +1,9 @@
+{
+  "optionspec": "1",
+  "definition": "example.rigid-registration",
+  "version": "1.0.0",
+  "values": {
+    "Registration": {"MaxShift": 20, "SubpixelFactor": 4},
+    "Stack": {"TimepointInterval": [1, 500]}
+  }
+}
