@@ -202,3 +202,63 @@ testCase.verifyEmpty(optionspec.checkGeneratedClasses(definitionFile, sourceFold
 
 `checkGeneratedClasses` lists files that are missing, that differ from what the definition generates, and that were generated from the definition but would no longer be generated, such as the class of a removed group.
 
+## Definitions from option structs
+
+A toolbox that writes options as a MATLAB struct, as NANSEN session methods do, can keep the struct as the source and derive the definition from it.
+
+- `optionspec.inferDefinition(options, Id=...)` returns the text of a definition, version 1.0.0, whose options and defaults are the fields and values of the struct.
+- `optionspec.checkDefinition(options, definition)` compares the struct with a definition option by option and returns each difference with the version change it needs, and possible renames.
+- `optionspec.updateDefinition(options, definitionFile)` rewrites the definition when they differ, with the new version, and for a major change adds a migration. It writes nothing when they match, and creates the file (with `Id`) when it does not exist.
+
+### Inference
+
+| Value | Option |
+| --- | --- |
+| `true` | boolean |
+| `12`, `0.5`, `Inf` | number that allows `"Inf"`, `"-Inf"` and `"NaN"`, as a double field does |
+| `int16(3)` | integer |
+| `[32, 32, 16]`, `[true, false]` | array of any length |
+| `[1, 0; 0, 1]` | matrix |
+| `'soma'`, `"soma"` | string |
+| `{'a', 'b'}`, `["a", "b"]` | array of strings |
+| `struct(...)` | group |
+| `[]` | array of numbers or null, default null |
+
+Function handles, mixed cell arrays and objects cannot be inferred and are an `OPTIONSPEC:CannotInferDefinition` error.
+
+### Hints
+
+A field `<name>_` next to `<name>` is a hint, as in NANSEN option structs, and not an option:
+
+| Hint | Definition |
+| --- | --- |
+| `{'a', 'b'}`, `{0, 1, 2}` | `enum`, `"x-ui": {"widget": "dropdown"}` |
+| `struct('type', 'slider', 'args', {{'Min', 1, 'Max', 16, 'TooltipUnits', 'px'}})` | `minimum`, `maximum`, slider widget with units |
+| `struct('type', 'button')`, `'togglebutton'`, `'multilinechar'` | the widget |
+| `'uigetdir'` | `"format": "folder-path"`, folder widget |
+| `'uigetfile'`, `'uiputfile'` | `"format": "file-path"`, file widget |
+| `'internal'`, `'ignore'` | hidden widget |
+| `'(1,3) double {mustBeInteger, mustBeNonnegative}'` | a declaration, below |
+
+A value does not say whether a number is an integer, whether a vector has a fixed length, what `[]` will hold, or what range is allowed. A declaration says so in the syntax of a MATLAB `arguments` block: `(rows,columns) class {validators}`. A struct hint can carry one in a field `declaration`, for example a slider whose value is an integer: `struct('type', 'slider', 'args', {{'Min', 1, 'Max', 16}}, 'declaration', '(1,1) double {mustBeInteger}')`. Write declarations as char: NANSEN's struct editor ignores char hints it does not know, and does not accept string hints.
+
+- Sizes: `(1,1)` scalar; `(1,N)` and `(N,1)` a vector of N elements; `(1,:)` and `(:,1)` a vector of any length; `(M,N)` and `(:,:)` a matrix. `char` with `(1,:)` is one text value.
+- Classes: `double`, `single`, the integer classes, `logical`, `char`, `string`.
+- Validators: `mustBeInteger`, `mustBeFinite`, `mustBePositive`, `mustBeNonnegative`, `mustBeNegative`, `mustBeNonpositive`, `mustBeGreaterThan`, `mustBeGreaterThanOrEqual`, `mustBeLessThan`, `mustBeLessThanOrEqual`, `mustBeInRange` (inclusive bounds), `mustBeMember`. The first argument, the property name, is not read.
+- As in an `arguments` block, a declared double allows `Inf` and `NaN` unless `mustBeFinite` or `mustBeInteger` rules them out.
+- With a declaration, a default of `[]` means "not set" (null) for a scalar or fixed size, and an empty array for `(1,:)`.
+
+### Version changes
+
+| Difference | Level |
+| --- | --- |
+| Title, description, `format` or `x-ui` changed | patch |
+| Option added; enum value added; range or element count widened; non-finite value or null allowed; integer to number; default changed | minor |
+| Option removed or retyped; enum added or value removed; range or element count narrowed; non-finite value or null no longer allowed | major |
+
+A changed default is a change of the definition, because the default is what a run uses when the caller does not pass the option.
+
+A rename looks like a removed and an added option. `checkDefinition` returns each removed and added option of the same type in the same group as a possible rename; `updateDefinition` writes a `rename` operation only for the pairs passed in `Renames`. For a major change, the migration removes removed and retyped options, so that old values of those options give way to the new defaults. Old values of a narrowed option are kept, and the migration description lists them; if they are no longer valid, reading them is an `OPTIONSPEC:InvalidValues` error.
+
+`checkDefinition` and `updateDefinition` accept only definitions without `allOf`.
+

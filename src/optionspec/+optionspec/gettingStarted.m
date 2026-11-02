@@ -23,6 +23,9 @@ function gettingStarted()
     fprintf('  - optionspec.Definition\n');
     fprintf('  - optionspec.generateClasses\n');
     fprintf('  - optionspec.checkGeneratedClasses\n');
+    fprintf('  - optionspec.inferDefinition\n');
+    fprintf('  - optionspec.checkDefinition\n');
+    fprintf('  - optionspec.updateDefinition\n');
     fprintf('  - optionspec.toolboxdir\n');
     fprintf('  - optionspec.toolboxversion\n');
     fprintf('  - optionspec.gettingStarted\n\n');

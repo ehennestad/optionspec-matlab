@@ -17,6 +17,7 @@ optionspec defines the options of a processing step in a JSON Schema 2020-12 fil
 - A definition includes other definitions with `allOf`, for example options shared by every step. An included option can be given another default or a narrower range, but not another type.
 - A `<name>.migrations.json` file next to a definition lists operations (`rename`, `remove`, `add`, `mapValues`, `scale`, and `function` for a MATLAB function) that upgrade values by one major version each. `readDocument` applies them to documents of older versions.
 - `optionspec.generateClasses` writes MATLAB value classes from a definition: options are properties with defaults, help text and property validation, so they are checked when set and complete with Tab. `optionspec.checkGeneratedClasses` reports classes that no longer match their definition, for a test in the toolbox that commits them.
+- `optionspec.inferDefinition`, `optionspec.checkDefinition` and `optionspec.updateDefinition` derive a definition from a MATLAB options struct, such as the options of a NANSEN session method with its `<name>_` hints, and give it a new version with a migration when the struct changes.
 - Inf, -Inf and NaN are written as the strings `"Inf"`, `"-Inf"` and `"NaN"`, and allowed only for options that list them in `x-nonfinite`.
 
 [docs/format.md](docs/format.md) specifies the three file formats and how values map to MATLAB types.
