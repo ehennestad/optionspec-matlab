@@ -1,6 +1,6 @@
 ---
 name: optionspec-definitions
-description: Write, change and version optionspec option definitions — JSON Schema 2020-12 files that define the options of a MATLAB processing step — and their migrations and generated MATLAB classes. Use when asked to add options for a step or function, write an option definition or options schema, convert a MATLAB arguments block or a NANSEN getDefaultOptions struct to a definition, bump the version of a definition, write a migration for old value documents, or generate option classes with optionspec.generateClasses. Covers the optionspec profile, conversion rules, version bumps, migrations and the checks that prove a definition is correct.
+description: Write, change and version optionspec option definitions — JSON Schema 2020-12 files that define the options of a MATLAB processing step — and their migrations and generated MATLAB classes. Use when asked to add options for a step or function, write an option definition or options schema, convert a MATLAB arguments block or a NANSEN getDefaultOptions struct to a definition, bump the version of a definition, write a migration for old value documents, keep a definition in step with a MATLAB options struct (inferDefinition, checkDefinition, updateDefinition), or generate option classes with optionspec.generateClasses. Covers the optionspec profile, conversion rules, version bumps, migrations and the checks that prove a definition is correct.
 license: MIT
 ---
 
@@ -54,15 +54,18 @@ function named below. Look for existing definition files (`*.json` with
    | default `Inf`, `-Inf`, `NaN` | the string `"Inf"`, `"-Inf"`, `"NaN"` and `"x-nonfinite": ["Inf"]` (list each one used) |
    | default `[]` meaning "not set" | `"type": ["number", "null"]` (or `["array", "null"]`), `"default": null` |
 
-   From a NANSEN options struct (`getDefaultOptions`, `getDefaults`): each
-   top-level struct field is a group (`"type": "object"` with
-   `"properties"`). Hint fields named `<name>_` become keywords of `<name>`,
-   not options:
+   From a NANSEN options struct (`getDefaultOptions`, `getDefaults`, the
+   options function of a session method): do not convert by hand. Run
+   `optionspec.inferDefinition(options, Id=...)`, which applies the hint
+   table below, and add declarations (see "Definitions kept in step with an
+   options struct") for what the values cannot say. Each top-level struct
+   field is a group (`"type": "object"` with `"properties"`). Hint fields
+   named `<name>_` become keywords of `<name>`, not options:
 
    | NANSEN hint | Definition |
    | --- | --- |
    | `x_ = {'a', 'b'}` | `"enum": ["a", "b"]`, `"x-ui": {"widget": "dropdown"}` |
-   | `x_ = {0, 1, 2}` | `"type": "integer"`, `"enum": [0, 1, 2]`, dropdown |
+   | `x_ = {0, 1, 2}` | `"type": "number"`, `"enum": [0, 1, 2]`, dropdown |
    | `x_ = struct('type', 'slider', 'args', {{'Min', 1, 'Max', 16, ...}})` | `"minimum": 1`, `"maximum": 16`, `"x-ui": {"widget": "slider"}` (and `"units"` from `TooltipUnits`) |
    | `x_ = 'uigetdir'` / `'uigetfile'` | `"format": "folder-path"` / `"file-path"` and widget `"folder"` / `"file"` |
    | `x_ = 'internal'` | `"x-ui": {"widget": "hidden"}` |
@@ -157,6 +160,36 @@ migrations file with the paths it uses.
 Add a test with a value document of the old version (write it by hand with
 the old option names) and check that `readDocument` returns the expected
 current values.
+
+## Definitions kept in step with an options struct
+
+Some toolboxes keep the MATLAB options struct as the source and derive the
+definition from it, for example NANSEN session methods, whose options are a
+struct in a local function. Recognise them by a definition file next to the
+code that builds the struct, or by calls to `checkDefinition` or
+`updateDefinition`. In these toolboxes:
+
+- **Change the struct, never the JSON.** `updateDefinition` rewrites the
+  definition from the struct and overwrites hand edits.
+- **Say in a hint what the value cannot say.** A declaration in
+  `arguments`-block syntax, as a char hint: `x_ = '(1,3) double {mustBeInteger, mustBeNonnegative}'`.
+  Use it for integers, fixed lengths, the type of a `[]` default, ranges
+  without a slider, and `mustBeFinite`. Next to a slider or button hint, add
+  a `declaration` field to the hint struct instead. Write char, not string:
+  NANSEN's struct editor accepts only char hints. The supported sizes,
+  classes and validators are listed in `docs/format.md` under "Hints".
+- **Update with the code change.** Run
+  `[definition, changes, level] = optionspec.updateDefinition(options, definitionFile)`
+  and commit the definition and its migrations file with the change to the
+  struct. Report `level` and `changes` to the user.
+- **Renames.** Call `[~, ~, candidates] = optionspec.checkDefinition(options, definitionFile)`
+  first. If `candidates` lists a removed and an added option that are the
+  same option under a new name, ask the user to confirm, then pass the
+  confirmed rows as `Renames=`. Without them, the old values of the option
+  are dropped from old documents.
+- **A changed default is a minor version.** It is a change of the
+  definition, not a value of a run; values of a run are passed to the
+  function.
 
 ## Generated classes
 
